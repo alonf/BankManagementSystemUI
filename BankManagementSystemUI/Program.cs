@@ -19,6 +19,7 @@ builder.Services.AddRobustHttpClient<FunctionHttpClientWrapper>(baseUrl: account
 builder.Services.AddSingleton<INetworkServerProvider, NetworkServerProvider>();
 builder.Services.AddSingleton<IAccountManagerClient, AccountManagerClient>();
 builder.Services.AddSingleton<ISignalRWrapper, SignalRWrapper>();
+builder.Services.AddSingleton<ICurrentAccountHolder, CurrentAccountHolder>();
 
 var app = builder.Build();
 

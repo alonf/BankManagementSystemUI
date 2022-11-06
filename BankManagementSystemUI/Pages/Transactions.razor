@@ -1,25 +1,28 @@
 ﻿@page "/transactions"
 @using BankManagementSystemUI.Data
+@using System.ComponentModel.DataAnnotations
+@using BankManagementSystemUI.Services
+@using System.Linq
+@inject ISignalRWrapper SignalRWrapper;
+@inject IAccountManagerClient AccountManagerClient;
+@inject ICurrentAccountHolder CurrentAccountHolder;
+@inject IJSRuntime JsRuntime
 
 
 <PageTitle>Transactions</PageTitle>
 
 <h1>Transactions</h1>
 
-<p role="status">Current balance: @_currentBalance</p>
+<p role="status">Current balance: @CurrentAccountHolder.Balance</p>
 
 <input type="text" class="txt-primary" @bind="_amount" placeholder="Amount" />
 
-<button class="btn btn-primary" @onclick="Deposit">Deposit</button>
-<button class="btn btn-primary" @onclick="Withdraw">Withdraw</button>
+<button class="btn btn-primary" @onclick="DepositAsync" disabled="@IsDisabled">Deposit</button>
+<button class="btn btn-primary" @onclick="WithdrawAsync" disabled="@IsDisabled">Withdraw</button>
 
 <div>
-    <p><button class="btn btn-primary" @onclick="GetTransactions">Get Transaction History</button></p>
-    @if (_transactions == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
+    <p><button class="btn btn-primary" disabled="@IsDisabled" @onclick="GetTransactionsAsync">Get Transaction History</button></p>
+    @if (_transactions != null)
     {
         <table class="table">
             <thead>
@@ -44,25 +47,65 @@
 </div>
 
 @code {
-    private decimal _currentBalance = 0;
+
     private decimal _amount = 0;
-    private CustomerInfo _customerInfo = new CustomerInfo();
     private IList<AccountTransactionResponse>? _transactions;
 
-    private void Deposit()
+    private bool IsDisabled => string.IsNullOrEmpty(CurrentAccountHolder.CustomerInfo.AccountId);
+
+    protected override async Task OnInitializedAsync()
     {
-        _currentBalance += _amount;
+        await base.OnInitializedAsync();
+        SignalRWrapper.OnSignalREvent += OnSignalREvent;
     }
 
-    private void Withdraw()
+    public void Dispose()
     {
-        _currentBalance -= _amount;
+        SignalRWrapper.OnSignalREvent -= OnSignalREvent;
     }
 
-    private void GetTransactions()
+    private void OnSignalREvent(object? sender, AccountCallbackRequest args)
     {
-        _transactions = new List<AccountTransactionResponse>();
-        _transactions.Add(new AccountTransactionResponse() { AccountId = Guid.NewGuid().ToString(), TransactionAmount = 100, TransactionTime = DateTimeOffset.UtcNow });
-        _transactions.Add(new AccountTransactionResponse() { AccountId = Guid.NewGuid().ToString(), TransactionAmount = -200, TransactionTime = DateTimeOffset.UtcNow });
+        if (args.IsSuccessful && args.AccountId == CurrentAccountHolder.CustomerInfo.AccountId)
+        {
+            Task.Run(async () => await UpdateBalanceAsync());
+        }
+
+        if (!args.IsSuccessful && !string.IsNullOrEmpty(args.ResultMessage))
+        {
+            Task.Run(async () => await AlertAsync(args.ResultMessage));
+        }
+    }
+
+    private async Task AlertAsync(string info)
+    {
+        await JsRuntime.InvokeVoidAsync("alert", info);
+    }
+
+    private async Task UpdateBalanceAsync()
+    {
+        CurrentAccountHolder.Balance = await
+            AccountManagerClient.GetAccountBalanceAsync(CurrentAccountHolder.CustomerInfo.AccountId!) ?? 0;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DepositAsync()
+    {
+        await AccountManagerClient.DepositAsync(CurrentAccountHolder.CustomerInfo.AccountId!, _amount);
+    }
+
+    private async Task WithdrawAsync()
+    {
+        var result = await AccountManagerClient.WithdrawAsync(CurrentAccountHolder.CustomerInfo.AccountId!, _amount);
+        if (result != null && result.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            var message = await result.Content.ReadAsStringAsync();
+            await AlertAsync(message ?? "Unknown error");
+        }
+    }
+
+    private async Task GetTransactionsAsync()
+    {
+        _transactions = await AccountManagerClient.GetAccountTransactionHistory(CurrentAccountHolder.CustomerInfo.AccountId!);
     }
 }

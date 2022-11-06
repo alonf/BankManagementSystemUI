@@ -1,5 +1,6 @@
 ﻿namespace BankManagementSystemUI.Services
 {
+
     public class NetworkServerProvider : INetworkServerProvider
     {
         private readonly HttpClient _daprHttpClient;
@@ -28,10 +29,9 @@
             }
         }
 
-        public HttpClient GetHttpClient()
-        {
-            return CurrentServerType == ServerType.Dapr ? _daprHttpClient : _functionHttpClient;
-        }
+        public HttpClient HttpClient =>
+               CurrentServerType == ServerType.Dapr ? _daprHttpClient : _functionHttpClient;
+        
 
         public string GetSignalRNegotiationAddress(ServerType serverType)
         {

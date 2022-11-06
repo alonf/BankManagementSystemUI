@@ -4,8 +4,8 @@
 @using BankManagementSystemUI.Services
 @using System.Linq
 @inject ISignalRWrapper SignalRWrapper;
-@inject INetworkServerProvider NetworkServerProvider
 @inject IAccountManagerClient AccountManagerClient;
+@inject ICurrentAccountHolder CurrentAccountHolder;
 
 <PageTitle>Account</PageTitle>
 
@@ -20,10 +20,10 @@
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.State" placeholder="State" />
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.ZipCode" placeholder="Zip Code" />
 
-<button class="btn btn-primary" @onclick="CreateAccount">Create Account</button>
+<button class="btn btn-primary" @onclick="CreateAccountAsync">Create Account</button>
 
 @*Display the current customer info*@
-@if (!string.IsNullOrEmpty(_customerInfo.Email))
+@if (!string.IsNullOrEmpty(CurrentAccountHolder.CustomerInfo.Email))
 {
     <h2>Customer Info</h2>
     <table class="table">
@@ -35,47 +35,48 @@
             <th>Address</th>
         </tr>
         <tr>
-            <td>@_customerInfo.AccountId</td>
-            <td>@_customerInfo.FullName</td>
-            <td>@_customerInfo.Email</td>
-            <td>@_customerInfo.PhoneNumber</td>
-            <td>@_customerInfo.FullAddress</td>
+            <td>@CurrentAccountHolder.CustomerInfo.AccountId</td>
+            <td>@CurrentAccountHolder.CustomerInfo.FullName</td>
+            <td>@CurrentAccountHolder.CustomerInfo.Email</td>
+            <td>@CurrentAccountHolder.CustomerInfo.PhoneNumber</td>
+            <td>@CurrentAccountHolder.CustomerInfo.FullAddress</td>
         </tr>
     </table>
 }
 
-
 @code {
-    private readonly CustomerInfo _customerInfo = new CustomerInfo();
     private CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
-    //private async Task GetAccountAsync()
-    //{
-    //    if (string.IsNullOrEmpty(_customerRegistrationInfo.Email))
-    //    {
-    //        return;
-    //    }
-        
-    //    var accountIdInfo = await AccountManagerClient.GetAccountIdAsync(_customerRegistrationInfo.Email);
-    //    if (accountIdInfo?.AccountIds == null || !accountIdInfo.AccountIds.Any())
-    //    {
-    //        return;
-    //    }
-    //    _customerInfo = await AccountManagerClient.GetCustomerInfoAsync(accountIdInfo.AccountIds.First());
-      
-    //}
-
-    private void CreateAccount()
+    
+    protected override async Task OnInitializedAsync()
     {
-        SignalRWrapper.OnSignalREvent += 
-        //register signalr
-        
-        //send create user
-        
-        //update the below on signalr event
-        _customerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
-        _customerInfo.Email = _customerRegistrationInfo.Email;
-        _customerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
-        _customerInfo.PhoneNumber = _customerRegistrationInfo.PhoneNumber;
-        _customerInfo.AccountId = Guid.NewGuid().ToString();
+        await base.OnInitializedAsync();
+        SignalRWrapper.OnSignalREvent += OnSignalREvent;
+    }
+    
+    private async Task CreateAccountAsync()
+    {
+        _customerRegistrationInfo.CallerId = "Teller1";
+        _customerRegistrationInfo.SchemaVersion = "1.0";
+        _customerRegistrationInfo.RequestId = Guid.NewGuid().ToString();
+        var accountCreatedEvent = await AccountManagerClient.RegisterCustomerAsync(_customerRegistrationInfo);
+    }
+
+    public void Dispose()
+    {
+        SignalRWrapper.OnSignalREvent -= OnSignalREvent;
+    }
+    
+    private void OnSignalREvent(object? sender, AccountCallbackRequest args)
+    {
+        if (args.IsSuccessful && args.RequestId == _customerRegistrationInfo.RequestId)
+        {
+            CurrentAccountHolder.CustomerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
+            CurrentAccountHolder.CustomerInfo.Email = _customerRegistrationInfo.Email;
+            CurrentAccountHolder.CustomerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
+            CurrentAccountHolder.CustomerInfo.PhoneNumber = _customerRegistrationInfo.PhoneNumber;
+            CurrentAccountHolder.CustomerInfo.AccountId = args.AccountId;
+           
+            StateHasChanged();
+        }
     }
 }

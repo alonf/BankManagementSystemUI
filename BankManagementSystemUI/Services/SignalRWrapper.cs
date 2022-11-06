@@ -1,11 +1,19 @@
 using BankManagementSystemUI.Data;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace BankManagementSystemUI.Services;
 
 public class SignalRWrapper : ISignalRWrapper
 {
     private readonly INetworkServerProvider _networkServerProvider;
+    private JsonSerializerOptions SerializeOptions => new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+    };
+    
     private HubConnection SignalRHubConnection => 
             _networkServerProvider.CurrentServerType == ServerType.Dapr ?
                 _signalRDaprHubConnection :
@@ -17,7 +25,7 @@ public class SignalRWrapper : ISignalRWrapper
 
     public event EventHandler<AccountCallbackRequest>? OnSignalREvent;
 
-    public SignalRWrapper(INetworkServerProvider networkServerProvider, ILogger<SignalRWrapper> logger, IAccountManagerClient accountManagerClient)
+    public SignalRWrapper(INetworkServerProvider networkServerProvider, ILogger<SignalRWrapper> logger)
     {
         _networkServerProvider = networkServerProvider;
         
@@ -43,10 +51,20 @@ public class SignalRWrapper : ISignalRWrapper
 
             await SignalRHubConnection.StartAsync();
 
-            SignalRHubConnection.On<Argument>("accountcallback", message =>
+            SignalRHubConnection.On<JsonObject>("accountcallback", data =>
             {
-                _logger.LogInformation($"Received SignalR message: {message.Text}");
-                OnSignalREvent?.Invoke(this, message.Text!);
+                if (data.ContainsKey("text"))
+                {
+                    var argument = data["text"]!.ToString();
+                    var accountCallbackRequest = JsonSerializer.Deserialize<AccountCallbackRequest>(argument, SerializeOptions);
+                    OnSignalREvent?.Invoke(this, accountCallbackRequest!);
+                }
+                else if (data.ContainsKey("ActionName"))
+                {
+                    var accountCallbackRequest = JsonSerializer.Deserialize<AccountCallbackRequest>(data.ToString());
+                    _logger.LogInformation($"SignalR message: {accountCallbackRequest}");
+                    OnSignalREvent?.Invoke(this, accountCallbackRequest!);
+                }
             });
 
             SignalRHubConnection.On<AccountCallbackRequest>("accountcallback", message =>

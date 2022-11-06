@@ -2,7 +2,7 @@
 {
     public interface INetworkServerProvider
     {
-        HttpClient GetHttpClient();
+        HttpClient HttpClient { get; }
         ServerType CurrentServerType { get; set; }
         string GetSignalRNegotiationAddress(ServerType serverType);
     }
