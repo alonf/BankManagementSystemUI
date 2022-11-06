@@ -1,5 +1,11 @@
 ﻿@page "/account"
 @using BankManagementSystemUI.Data
+@using System.ComponentModel.DataAnnotations
+@using BankManagementSystemUI.Services
+@using System.Linq
+@inject ISignalRWrapper SignalRWrapper;
+@inject INetworkServerProvider NetworkServerProvider
+@inject IAccountManagerClient AccountManagerClient;
 
 <PageTitle>Account</PageTitle>
 
@@ -14,7 +20,7 @@
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.State" placeholder="State" />
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.ZipCode" placeholder="Zip Code" />
 
-<button class="btn btn-primary" @onclick="GetAccount">Get Account</button>
+<button class="btn btn-primary" @onclick="GetAccountAsync">Get Account</button>
 <button class="btn btn-primary" @onclick="CreateAccount">Create Account</button>
 
 @*Display the current customer info*@
@@ -43,13 +49,20 @@
 @code {
     private CustomerInfo _customerInfo = new CustomerInfo();
     private CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
-    private void GetAccount()
+    private async Task GetAccountAsync()
     {
-        _customerInfo.FullAddress = "Ha Azmaut St Binyamina 3050311 Israel";
-        _customerInfo.Email = "alon@fliess.org";
-        _customerInfo.FullName = "Alon Fliess";
-        _customerInfo.PhoneNumber = "12345";
-        _customerInfo.AccountId = Guid.NewGuid().ToString();
+        if (string.IsNullOrEmpty(_customerRegistrationInfo.Email))
+        {
+            return;
+        }
+        
+        var accountIdInfo = await AccountManagerClient.GetAccountIdAsync(_customerRegistrationInfo.Email);
+        if (accountIdInfo?.AccountIds == null || !accountIdInfo.AccountIds.Any())
+        {
+            return;
+        }
+        _customerInfo = await AccountManagerClient.GetCustomerInfoAsync(accountIdInfo.AccountIds.First());
+      
     }
 
     private void CreateAccount()
