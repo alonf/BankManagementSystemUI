@@ -20,11 +20,10 @@
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.State" placeholder="State" />
 <input type="text" class="txt-primary" @bind="_customerRegistrationInfo.ZipCode" placeholder="Zip Code" />
 
-<button class="btn btn-primary" @onclick="GetAccountAsync">Get Account</button>
 <button class="btn btn-primary" @onclick="CreateAccount">Create Account</button>
 
 @*Display the current customer info*@
-@if (_customerInfo != null)
+@if (!string.IsNullOrEmpty(_customerInfo.Email))
 {
     <h2>Customer Info</h2>
     <table class="table">
@@ -47,26 +46,32 @@
 
 
 @code {
-    private CustomerInfo _customerInfo = new CustomerInfo();
+    private readonly CustomerInfo _customerInfo = new CustomerInfo();
     private CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
-    private async Task GetAccountAsync()
-    {
-        if (string.IsNullOrEmpty(_customerRegistrationInfo.Email))
-        {
-            return;
-        }
+    //private async Task GetAccountAsync()
+    //{
+    //    if (string.IsNullOrEmpty(_customerRegistrationInfo.Email))
+    //    {
+    //        return;
+    //    }
         
-        var accountIdInfo = await AccountManagerClient.GetAccountIdAsync(_customerRegistrationInfo.Email);
-        if (accountIdInfo?.AccountIds == null || !accountIdInfo.AccountIds.Any())
-        {
-            return;
-        }
-        _customerInfo = await AccountManagerClient.GetCustomerInfoAsync(accountIdInfo.AccountIds.First());
+    //    var accountIdInfo = await AccountManagerClient.GetAccountIdAsync(_customerRegistrationInfo.Email);
+    //    if (accountIdInfo?.AccountIds == null || !accountIdInfo.AccountIds.Any())
+    //    {
+    //        return;
+    //    }
+    //    _customerInfo = await AccountManagerClient.GetCustomerInfoAsync(accountIdInfo.AccountIds.First());
       
-    }
+    //}
 
     private void CreateAccount()
     {
+        SignalRWrapper.OnSignalREvent += 
+        //register signalr
+        
+        //send create user
+        
+        //update the below on signalr event
         _customerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
         _customerInfo.Email = _customerRegistrationInfo.Email;
         _customerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
