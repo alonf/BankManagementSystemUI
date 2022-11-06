@@ -1,0 +1,43 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@using BankManagementSystemUI.Services
+@inject ISignalRWrapper SignalRWrapper;
+@inject INetworkServerProvider NetworkServerProvider
+
+
+<PageTitle>Index</PageTitle>
+
+<h1>Bank Management System Microservices Demo</h1>
+
+For more information visit
+<a href="https://github.com/alonf/BankManagementSystemFunctionDemo">Microservices Dapr + ACA Demo</a> and
+<a href="https://github.com/alonf/BankManagementSystemDaprDemo">Microservices Function App Demo</a>
+
+<p>
+    <EditForm Model="@RemoteServerType">
+        <InputRadioGroup @bind-Value="RemoteServerType">
+            Choose Server Type:
+            <br>
+            <InputRadio Value="@ServerType.Dapr"></InputRadio><text>&nbsp; Dapr + Azure Containers App</text>
+            <br>
+            <InputRadio Value="@ServerType.Function"></InputRadio><text>&nbsp; Azure Function App</text>
+        </InputRadioGroup>
+    </EditForm>
+</p>
+
+
+@code {
+    private ServerType _serverType = ServerType.Dapr;
+
+    [Required]
+    public ServerType RemoteServerType 
+    {
+        get => _serverType;
+        set
+        {
+            Task.Run(async ()=> await SignalRWrapper.StopSignalRAsync());
+            _serverType = value;
+            NetworkServerProvider.CurrentServerType = _serverType;
+        }
+    }
+}

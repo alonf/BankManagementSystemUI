@@ -1,0 +1,63 @@
+﻿@page "/account"
+@using BankManagementSystemUI.Data
+
+<PageTitle>Account</PageTitle>
+
+<h1>Account</h1>
+
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.FirstName" placeholder="First Name" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.LastName" placeholder="Last Name" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.Email" placeholder="Email" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.PhoneNumber" placeholder="Phone Number" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.Address" placeholder="Address" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.City" placeholder="City" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.State" placeholder="State" />
+<input type="text" class="txt-primary" @bind="_customerRegistrationInfo.ZipCode" placeholder="Zip Code" />
+
+<button class="btn btn-primary" @onclick="GetAccount">Get Account</button>
+<button class="btn btn-primary" @onclick="CreateAccount">Create Account</button>
+
+@*Display the current customer info*@
+@if (_customerInfo != null)
+{
+    <h2>Customer Info</h2>
+    <table class="table">
+        <tr>
+            <th>Account Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+        </tr>
+        <tr>
+            <td>@_customerInfo.AccountId</td>
+            <td>@_customerInfo.FullName</td>
+            <td>@_customerInfo.Email</td>
+            <td>@_customerInfo.PhoneNumber</td>
+            <td>@_customerInfo.FullAddress</td>
+        </tr>
+    </table>
+}
+
+
+@code {
+    private CustomerInfo _customerInfo = new CustomerInfo();
+    private CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
+    private void GetAccount()
+    {
+        _customerInfo.FullAddress = "Ha Azmaut St Binyamina 3050311 Israel";
+        _customerInfo.Email = "alon@fliess.org";
+        _customerInfo.FullName = "Alon Fliess";
+        _customerInfo.PhoneNumber = "12345";
+        _customerInfo.AccountId = Guid.NewGuid().ToString();
+    }
+
+    private void CreateAccount()
+    {
+        _customerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
+        _customerInfo.Email = _customerRegistrationInfo.Email;
+        _customerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
+        _customerInfo.PhoneNumber = _customerRegistrationInfo.PhoneNumber;
+        _customerInfo.AccountId = Guid.NewGuid().ToString();
+    }
+}
