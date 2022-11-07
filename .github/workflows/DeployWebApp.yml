@@ -30,7 +30,7 @@ jobs:
           accountManagerFunctionBaseUrl=https://master-bms-accountmanager.azurewebsites.net/api/
           signalRFunctionNegotiateUrl=https://master-bms-notificationmanager.azurewebsites.net/api/
           
-          az deployment group create --resource-group bmsu-rg --template-file ../infra/main.bicep \
+          az deployment group create --resource-group bmsu-rg --template-file ../Infra/main.bicep \
             --parameters branchName='master' \
             accountManagerFunctionKey=$accountManagerFunctionKey \
             signalRFunctionKey= $signalRFunctionKey\
