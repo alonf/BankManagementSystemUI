@@ -1,10 +1,14 @@
 param branchName string
 param location string = resourceGroup().location
 param repositoryUrl string
-param accountManagerBaseUrl string
-param accountManagerKey string
-param signalRNegotiateUrl string
-param signalRKey string
+param accountManagerDaprBaseUrl string
+param accountManagerDaprKey string
+param signalRDaprNegotiateUrl string
+param signalRDaprKey string
+param accountManagerFunctionBaseUrl string
+param accountManagerFunctionKey string
+param signalRFunctionNegotiateUrl string
+param signalRFunctionKey string
 
 param tags object = {}
 var branch = toLower(last(split(branchName, '/')))
@@ -35,6 +39,37 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
     serverFarmId: appServicePlan.id
     siteConfig: {
       linuxFxVersion: linuxFxVersion
+      appSettings: [
+       
+        {
+            name: 'ASPNETCORE_URLS'
+            value: 'http://+:80'
+        }
+        {
+            name: 'BMSD_ACCOUNT_MANAGER_URL'
+            value: accountManagerDaprBaseUrl
+        }
+        {
+            name: 'BMSD_SIGNALR_URL'
+            value: signalRNegotiateDaprUrl
+        }
+        {
+            name: 'BMS_ACCOUNT_MANAGER_URL'
+            value: accountManagerFunctionBaseUrl
+        }
+        {
+            name: 'BMS_ACCOUNT_MANAGER_KEY'
+            value: accountManagerFunctionKey
+        }
+        {
+            name: 'BMS_SIGNALR_URL'
+            value: signalRNegotiateFunctionUrl
+        }
+        {
+            name: 'BMS_SIGNALR_NEGOTIATE_KEY'
+            value: signalRFunctionKey
+        }
+      ]
     }
   }
 }

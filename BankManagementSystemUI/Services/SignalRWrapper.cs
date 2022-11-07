@@ -1,5 +1,6 @@
 using BankManagementSystemUI.Data;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -25,7 +26,7 @@ public class SignalRWrapper : ISignalRWrapper
 
     public event EventHandler<AccountCallbackRequest>? OnSignalREvent;
 
-    public SignalRWrapper(INetworkServerProvider networkServerProvider, ILogger<SignalRWrapper> logger)
+    public SignalRWrapper(INetworkServerProvider networkServerProvider, IConfiguration configuration, ILogger<SignalRWrapper> logger)
     {
         _networkServerProvider = networkServerProvider;
         
@@ -34,10 +35,16 @@ public class SignalRWrapper : ISignalRWrapper
         _signalRDaprHubConnection = new HubConnectionBuilder()
             .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Dapr), c=>c.Headers.Add("x-application-user-id", "Teller1"))
             .WithAutomaticReconnect()
-            .Build();
+        .Build();
 
+        var functionKey = configuration["BMS_SIGNALR_NEGOTIATE_KEY"];
+        
         _signalRFunctionHubConnection = new HubConnectionBuilder()
-            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Function), c => c.Headers.Add("x-application-user-id", "Teller1"))
+            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Function), c =>
+            {
+                c.Headers.Add("x-application-user-id", "Teller1");
+                c.Headers.Add("x-functions-key", functionKey);
+            })
             .WithAutomaticReconnect()
             .Build();
     }

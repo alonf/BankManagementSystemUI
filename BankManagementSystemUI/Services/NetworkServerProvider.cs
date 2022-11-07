@@ -7,6 +7,7 @@
         private readonly HttpClient _functionHttpClient;
         private readonly string _signalRDaprUrl;
         private readonly string _signalRFunctionUrl;
+        private readonly string _accountManagerFunctionKey;
 
         public ServerType CurrentServerType { get; set; }
 
@@ -26,6 +27,12 @@
             if (string.IsNullOrEmpty(_signalRFunctionUrl))
             {
                 _signalRFunctionUrl = "http://localhost:7043/api/";
+            }
+
+            _accountManagerFunctionKey = configuration["BMS_ACCOUNT_MANAGER_KEY"];
+            if (!string.IsNullOrEmpty(_accountManagerFunctionKey))
+            {
+                functionHttpClient.HttpClient.DefaultRequestHeaders.Add("x-functions-key", _accountManagerFunctionKey);
             }
         }
 
