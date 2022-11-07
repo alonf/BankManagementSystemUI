@@ -35,7 +35,7 @@ jobs:
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
-        app-name: wapp-bank-management-ui
+        app-name: bank.management
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/BankManagementSystemUI/'
   
     # Azure logout 

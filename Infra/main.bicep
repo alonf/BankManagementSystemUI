@@ -12,7 +12,7 @@ var branch = toLower(last(split(branchName, '/')))
 
 param sku string = 'F1'
 var appServicePlanName = '${branch}-bmu-hostingplan'
-var webSiteName = 'wapp-bank-management-ui'
+var webSiteName = 'bank.management'
 var linuxFxVersion = 'DOTNETCORE|Latest'
 
 
@@ -68,11 +68,11 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 }
-resource srcControls 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-  name: '${appService.name}/web'
-  properties: {
-    repoUrl: repositoryUrl
-    branch: branch
-    isManualIntegration: true
-  }
-}
+//resource srcControls 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+//  name: '${appService.name}/web'
+//  properties: {
+//    repoUrl: repositoryUrl
+//    branch: branch
+//    isManualIntegration: true
+//  }
+//}
