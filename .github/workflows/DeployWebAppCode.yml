@@ -1,0 +1,47 @@
+name: Deploy Web App Code
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  AZURE_WEBAPP_NAME: wapp-bank-management-ui    
+  AZURE_WEBAPP_PACKAGE_PATH: '.'      
+  NUGET_VERSION: '6.0.x'          
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Install Nuget
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: ${{ env.NUGET_VERSION}}
+        
+    - name: NuGet to restore dependencies as well as project-specific tools that are specified in the project file
+      run: nuget restore
+      
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+      
+    - name: Run MSBuild
+      run: msbuild .\SampleWebApplication.sln
+       
+    - name: 'Run Azure webapp deploy action using publish profile credentials'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/BankManagementSystemUI/'
+  
+    # Azure logout 
+    - name: logout
+      run: |
+        az logout

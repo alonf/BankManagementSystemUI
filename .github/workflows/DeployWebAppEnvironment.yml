@@ -1,4 +1,4 @@
-name: Deploy Web App
+name: Deploy Web App Environment
 
 on:
   workflow_dispatch:
@@ -40,4 +40,7 @@ jobs:
             signalRFunctionNegotiateUrl=$signalRFunctionNegotiateUrl \
             repositoryUrl=https://github.com/${{github.repository}}
             
-         
+    # Azure logout 
+    - name: logout
+      run: |
+        az logout     

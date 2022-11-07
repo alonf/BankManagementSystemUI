@@ -1,0 +1,22 @@
+name: Full CI CD Workflow
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  call-deploy-web-app-environment:
+    uses: ./.github/workflows/DeployWebAppEnvironment.yml
+    secrets: inherit
+
+  delay:
+    runs-on: ubuntu-latest
+    needs: call-deploy-web-app-environment
+    steps:
+    - name: Sleep for 60 seconds to let the web environment finished deployment
+      run: sleep 60s
+      shell: bash
+  call-deploy-web-app-code:
+    needs: delay
+    uses: ./.github/workflows/DeployWebAppCode.yml
+    secrets: inherit
+    
