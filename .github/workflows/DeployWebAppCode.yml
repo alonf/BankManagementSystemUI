@@ -30,7 +30,7 @@ jobs:
       run: nuget restore
       
     - name: Build release version
-      run: dotnet build --configuration Release ./BankManagementSystemUI.sln
+      run: dotnet publish --configuration Release ./BankManagementSystemUI.sln
        
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
