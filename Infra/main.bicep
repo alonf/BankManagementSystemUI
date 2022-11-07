@@ -8,14 +8,11 @@ param accountManagerFunctionKey string
 param signalRFunctionNegotiateUrl string
 param signalRFunctionKey string
 
-param tags object = {}
 var branch = toLower(last(split(branchName, '/')))
 
 param sku string = 'F1'
-var storageAccountName = '${branch}bmustorageaccount'
 var appServicePlanName = '${branch}-bmu-hostingplan'
-var WebAppName = '${branch}-bank-management-ui' 
-var webSiteName = toLower('wapp-bank-management-ui')
+var webSiteName = 'wapp-bank-management-ui'
 var linuxFxVersion = 'DOTNETCORE|Latest'
 
 

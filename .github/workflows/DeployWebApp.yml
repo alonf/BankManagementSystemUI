@@ -33,9 +33,9 @@ jobs:
           az deployment group create --resource-group bmsu-rg --template-file ./Infra/main.bicep \
             --parameters branchName='master' \
             accountManagerFunctionKey=$accountManagerFunctionKey \
-            signalRFunctionKey= $signalRFunctionKey\
-            accountManagerDaprBaseUrl= $accountManagerDaprBaseUrl\
-            signalRDaprNegotiateUrl= $signalRDaprNegotiateUrl\
+            signalRFunctionKey=$signalRFunctionKey\
+            accountManagerDaprBaseUrl=$accountManagerDaprBaseUrl\
+            signalRDaprNegotiateUrl=$signalRDaprNegotiateUrl\
             accountManagerFunctionBaseUrl=$accountManagerFunctionBaseUrl \
             signalRFunctionNegotiateUrl=$signalRFunctionNegotiateUrl
             
