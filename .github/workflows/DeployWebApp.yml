@@ -19,6 +19,8 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
+          ls -l
+          pwd
           az config set extension.use_dynamic_install=yes_without_prompt
           az group create --name bmsu-rg --location eastus2
           #use this command and paste the output to the AZURE_CREDENTIALS secret
@@ -29,8 +31,7 @@ jobs:
           signalRDaprNegotiateUrl=https://$(az containerapp show --resource-group "bmsd-cont-app-rg" --name notificationmanager --query properties.configuration.ingress.fqdn | tr -d '"')
           accountManagerFunctionBaseUrl=https://master-bms-accountmanager.azurewebsites.net/api/
           signalRFunctionNegotiateUrl=https://master-bms-notificationmanager.azurewebsites.net/api/
-          ls -l
-          pwd
+         
           az deployment group create --resource-group bmsu-rg --template-file ../Infra/main.bicep \
             --parameters branchName='master' \
             accountManagerFunctionKey=$accountManagerFunctionKey \
