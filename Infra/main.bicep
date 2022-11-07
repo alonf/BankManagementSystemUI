@@ -2,9 +2,7 @@ param branchName string
 param location string = resourceGroup().location
 param repositoryUrl string
 param accountManagerDaprBaseUrl string
-param accountManagerDaprKey string
 param signalRDaprNegotiateUrl string
-param signalRDaprKey string
 param accountManagerFunctionBaseUrl string
 param accountManagerFunctionKey string
 param signalRFunctionNegotiateUrl string
