@@ -29,7 +29,8 @@ jobs:
           signalRDaprNegotiateUrl=https://$(az containerapp show --resource-group "bmsd-cont-app-rg" --name notificationmanager --query properties.configuration.ingress.fqdn | tr -d '"')
           accountManagerFunctionBaseUrl=https://master-bms-accountmanager.azurewebsites.net/api/
           signalRFunctionNegotiateUrl=https://master-bms-notificationmanager.azurewebsites.net/api/
-          
+          ls -l
+          pwd
           az deployment group create --resource-group bmsu-rg --template-file ../Infra/main.bicep \
             --parameters branchName='master' \
             accountManagerFunctionKey=$accountManagerFunctionKey \
