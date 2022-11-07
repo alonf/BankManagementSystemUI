@@ -73,6 +73,6 @@ resource srcControls 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
   properties: {
     repoUrl: repositoryUrl
     branch: branch
-    isManualIntegration: false
+    isManualIntegration: true
   }
 }
