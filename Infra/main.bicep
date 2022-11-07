@@ -16,7 +16,7 @@ var storageAccountName = '${branch}bmustorageaccount'
 var appServicePlanName = '${branch}-bmu-hostingplan'
 var WebAppName = '${branch}-bank-management-ui' 
 var webSiteName = toLower('wapp-bank-management-ui')
-var linuxFxVersion="DOTNETCORE|Latest"
+var linuxFxVersion = 'DOTNETCORE|Latest'
 
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
