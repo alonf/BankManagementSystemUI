@@ -37,6 +37,7 @@ jobs:
             accountManagerDaprBaseUrl=$accountManagerDaprBaseUrl\
             signalRDaprNegotiateUrl=$signalRDaprNegotiateUrl\
             accountManagerFunctionBaseUrl=$accountManagerFunctionBaseUrl \
-            signalRFunctionNegotiateUrl=$signalRFunctionNegotiateUrl
+            signalRFunctionNegotiateUrl=$signalRFunctionNegotiateUrl \
+            repositoryUrl=https://github.com/${{github.repository}}
             
          
