@@ -49,7 +49,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
             name: 'BMSD_SIGNALR_URL'
-            value: signalRNegotiateDaprUrl
+            value: signalRDaprNegotiateUrl
         }
         {
             name: 'BMS_ACCOUNT_MANAGER_URL'
@@ -61,7 +61,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
             name: 'BMS_SIGNALR_URL'
-            value: signalRNegotiateFunctionUrl
+            value: signalRFunctionNegotiateUrl
         }
         {
             name: 'BMS_SIGNALR_NEGOTIATE_KEY'
