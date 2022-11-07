@@ -12,7 +12,7 @@ var branch = toLower(last(split(branchName, '/')))
 
 param sku string = 'F1'
 var appServicePlanName = '${branch}-bmu-hostingplan'
-var webSiteName = 'bank.management'
+var webSiteName = 'bank-management-ui'
 var linuxFxVersion = 'DOTNETCORE|Latest'
 
 
