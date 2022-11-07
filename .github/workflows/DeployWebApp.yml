@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: test
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
