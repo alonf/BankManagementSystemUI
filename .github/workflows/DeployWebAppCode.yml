@@ -21,10 +21,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
-    - name: Install Nuget
-      uses: nuget/setup-nuget@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
       with:
-        nuget-version: ${{ env.NUGET_VERSION}}
+        dotnet-version: |
+          6.0.x
         
     - name: NuGet to restore dependencies as well as project-specific tools that are specified in the project file
       run: nuget restore
