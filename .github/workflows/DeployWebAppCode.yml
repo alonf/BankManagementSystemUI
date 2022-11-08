@@ -46,12 +46,6 @@ jobs:
     - name: Zip Deploy
       run: az webapp deploy --resource-group bmsu-rg  --name bank-management-ui --src-path ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp/myapp.zip --type zip
       
-    #- name: 'Run Azure webapp deploy action using publish profile credentials'
-    #  uses: azure/webapps-deploy@v2
-    #  with: 
-    #    app-name: bank-management-ui
-    #    package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
-  
     # Azure logout 
     - name: logout
       run: |
