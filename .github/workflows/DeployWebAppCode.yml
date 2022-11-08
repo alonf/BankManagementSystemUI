@@ -39,7 +39,9 @@ jobs:
        dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
     
     - name: Zip deployment
-      run: zip -r myapp.zip '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+      run: |
+        cd '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+        zip -r myapp.zip .
       
     - name: Zip Deploy
       run: az webapp deploy --resource-group bmsu-rg  --name bank-management-ui --src-path myapp.zip
