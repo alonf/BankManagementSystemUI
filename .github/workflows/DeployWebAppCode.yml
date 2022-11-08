@@ -30,7 +30,7 @@ jobs:
       id: getwebappname
       run: |
         a=$(az webapp list -g bmsu-rg --query '[].{Name:name}' -o tsv)
-        echo "APP_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+        echo "APP_NAME=$a" >> $GITHUB_ENV
 
     - name: Build release version
       run: |
