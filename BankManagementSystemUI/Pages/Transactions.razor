@@ -1,8 +1,6 @@
 ﻿@page "/transactions"
 @using BankManagementSystemUI.Data
-@using System.ComponentModel.DataAnnotations
 @using BankManagementSystemUI.Services
-@using System.Linq
 @inject ISignalRWrapper SignalRWrapper;
 @inject IAccountManagerClient AccountManagerClient;
 @inject ICurrentAccountHolder CurrentAccountHolder;
@@ -48,7 +46,7 @@
 
 @code {
 
-    private decimal _amount = 0;
+    private decimal _amount;
     private IList<AccountTransactionResponse>? _transactions;
 
     private bool IsDisabled => string.IsNullOrEmpty(CurrentAccountHolder.CustomerInfo.AccountId);
@@ -100,7 +98,7 @@
         if (result != null && result.StatusCode != System.Net.HttpStatusCode.OK)
         {
             var message = await result.Content.ReadAsStringAsync();
-            await AlertAsync(message ?? "Unknown error");
+            await AlertAsync(message);
         }
     }
 

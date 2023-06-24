@@ -4,6 +4,7 @@ public class CustomerInfo
 {
     public string? AccountId { get; set; }
 
+    // ReSharper disable once UnusedMember.Global
     public string? SchemaVersion { get; set; }
 
     public string? FullName { get; set; }

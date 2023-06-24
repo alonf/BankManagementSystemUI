@@ -1,12 +1,11 @@
-﻿namespace BankManagementSystemUI.Services
-{
-    public class FunctionHttpClientWrapper
-    {
-        public readonly HttpClient HttpClient;
+﻿namespace BankManagementSystemUI.Services;
 
-        public FunctionHttpClientWrapper(HttpClient httpClient)
-        {
-            HttpClient = httpClient;
-        }
+public class FunctionHttpClientWrapper
+{
+    public readonly HttpClient HttpClient;
+
+    public FunctionHttpClientWrapper(HttpClient httpClient)
+    {
+        HttpClient = httpClient;
     }
 }

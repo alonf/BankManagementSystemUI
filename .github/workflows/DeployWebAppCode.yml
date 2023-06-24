@@ -6,7 +6,7 @@ on:
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'      
-  NUGET_VERSION: '6.0.x'          
+  NUGET_VERSION: '7.0.x'          
   
 jobs:
   build-and-deploy:
@@ -21,10 +21,10 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: |
-          6.0.x
+          7.0.x
      
     - name: Build release version
       run: |

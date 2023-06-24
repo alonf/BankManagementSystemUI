@@ -1,6 +1,5 @@
 using BankManagementSystemUI.Data;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -9,7 +8,7 @@ namespace BankManagementSystemUI.Services;
 public class SignalRWrapper : ISignalRWrapper
 {
     private readonly INetworkServerProvider _networkServerProvider;
-    private JsonSerializerOptions SerializeOptions => new JsonSerializerOptions
+    private JsonSerializerOptions SerializeOptions => new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true
@@ -33,14 +32,14 @@ public class SignalRWrapper : ISignalRWrapper
         _logger = logger;
 
         _signalRDaprHubConnection = new HubConnectionBuilder()
-            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Dapr), c=>c.Headers.Add("x-application-user-id", "Teller1"))
+            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Dapr) ?? throw new Exception("The dapr negotiation address is null"), c=>c.Headers.Add("x-application-user-id", "Teller1"))
             .WithAutomaticReconnect()
         .Build();
 
-        var functionKey = configuration["BMS_SIGNALR_NEGOTIATE_KEY"];
+        var functionKey = configuration["BMS_SIGNALR_NEGOTIATE_KEY"] ?? string.Empty;
         
         _signalRFunctionHubConnection = new HubConnectionBuilder()
-            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Function), c =>
+            .WithUrl(networkServerProvider.GetSignalRNegotiationAddress(ServerType.Function) ?? throw new Exception("The function negotiation address is null"), c =>
             {
                 c.Headers.Add("x-application-user-id", "Teller1");
                 c.Headers.Add("x-functions-key", functionKey);
@@ -60,9 +59,9 @@ public class SignalRWrapper : ISignalRWrapper
 
             SignalRHubConnection.On<JsonObject>("accountcallback", data =>
             {
-                if (data.ContainsKey("text"))
+                if (((IDictionary<string, JsonNode?>)data).TryGetValue("text", out var json))
                 {
-                    var argument = data["text"]!.ToString();
+                    var argument = json!.ToString();
                     var accountCallbackRequest = JsonSerializer.Deserialize<AccountCallbackRequest>(argument, SerializeOptions);
                     OnSignalREvent?.Invoke(this, accountCallbackRequest!);
                 }
@@ -77,7 +76,7 @@ public class SignalRWrapper : ISignalRWrapper
             SignalRHubConnection.On<AccountCallbackRequest>("accountcallback", message =>
             {
                 _logger.LogInformation($"Received SignalR message: {message}");
-                OnSignalREvent?.Invoke(this, message!);
+                OnSignalREvent?.Invoke(this, message);
             });
         }
         catch (Exception e)
