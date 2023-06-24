@@ -16,7 +16,7 @@ var webSiteName = 'bank-management-ui'
 var linuxFxVersion = 'DOTNETCORE|Latest'
 
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
   properties: {
@@ -27,7 +27,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
   kind: 'linux'
 }
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource appService 'Microsoft.Web/sites@2022-09-01' = {
   name: webSiteName
   location: location
   properties: {
@@ -69,8 +69,9 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource srcControls 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-  name: '${appService.name}/web'
+resource srcControls 'Microsoft.Web/sites/sourcecontrols@2022-09-01' = {
+  parent: appService
+  name: 'web'
   properties: {
     repoUrl: repositoryUrl
     branch: branch

@@ -1,10 +1,9 @@
 ﻿using BankManagementSystemUI.Data;
 
-namespace BankManagementSystemUI.Services
+namespace BankManagementSystemUI.Services;
+
+public interface ICurrentAccountHolder
 {
-    public interface ICurrentAccountHolder
-    {
-        public CustomerInfo CustomerInfo { get; set; }
-        decimal Balance { get; set; }
-    }
+    public CustomerInfo CustomerInfo { get; set; }
+    decimal Balance { get; set; }
 }

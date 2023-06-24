@@ -1,9 +1,8 @@
-﻿namespace BankManagementSystemUI.Services
+﻿namespace BankManagementSystemUI.Services;
+
+public interface INetworkServerProvider
 {
-    public interface INetworkServerProvider
-    {
-        HttpClient HttpClient { get; }
-        ServerType CurrentServerType { get; set; }
-        string GetSignalRNegotiationAddress(ServerType serverType);
-    }
+    HttpClient HttpClient { get; }
+    ServerType CurrentServerType { get; set; }
+    string? GetSignalRNegotiationAddress(ServerType serverType);
 }

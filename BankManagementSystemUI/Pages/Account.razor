@@ -1,8 +1,6 @@
 ﻿@page "/account"
 @using BankManagementSystemUI.Data
-@using System.ComponentModel.DataAnnotations
 @using BankManagementSystemUI.Services
-@using System.Linq
 @inject ISignalRWrapper SignalRWrapper;
 @inject IAccountManagerClient AccountManagerClient;
 @inject ICurrentAccountHolder CurrentAccountHolder;
@@ -45,7 +43,7 @@
 }
 
 @code {
-    private CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
+    private readonly CustomerRegistrationInfo _customerRegistrationInfo = new CustomerRegistrationInfo();
     
     protected override async Task OnInitializedAsync()
     {
@@ -58,7 +56,7 @@
         _customerRegistrationInfo.CallerId = "Teller1";
         _customerRegistrationInfo.SchemaVersion = "1.0";
         _customerRegistrationInfo.RequestId = Guid.NewGuid().ToString();
-        var accountCreatedEvent = await AccountManagerClient.RegisterCustomerAsync(_customerRegistrationInfo);
+        await AccountManagerClient.RegisterCustomerAsync(_customerRegistrationInfo);
     }
 
     public void Dispose()
@@ -68,15 +66,15 @@
     
     private void OnSignalREvent(object? sender, AccountCallbackRequest args)
     {
-        if (args.IsSuccessful && args.RequestId == _customerRegistrationInfo.RequestId)
-        {
-            CurrentAccountHolder.CustomerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
-            CurrentAccountHolder.CustomerInfo.Email = _customerRegistrationInfo.Email;
-            CurrentAccountHolder.CustomerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
-            CurrentAccountHolder.CustomerInfo.PhoneNumber = _customerRegistrationInfo.PhoneNumber;
-            CurrentAccountHolder.CustomerInfo.AccountId = args.AccountId;
+        if (!args.IsSuccessful || args.RequestId != _customerRegistrationInfo.RequestId) 
+            return;
+
+        CurrentAccountHolder.CustomerInfo.FullAddress = $"{_customerRegistrationInfo.Address} {_customerRegistrationInfo.City} {_customerRegistrationInfo.State} {_customerRegistrationInfo.ZipCode}";
+        CurrentAccountHolder.CustomerInfo.Email = _customerRegistrationInfo.Email;
+        CurrentAccountHolder.CustomerInfo.FullName = $"{_customerRegistrationInfo.FirstName} {_customerRegistrationInfo.LastName}";
+        CurrentAccountHolder.CustomerInfo.PhoneNumber = _customerRegistrationInfo.PhoneNumber;
+        CurrentAccountHolder.CustomerInfo.AccountId = args.AccountId;
            
-            StateHasChanged();
-        }
+        InvokeAsync(StateHasChanged);
     }
 }

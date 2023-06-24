@@ -1,4 +1,3 @@
-﻿namespace BankManagementSystemUI.Services
-{
-    public enum ServerType { Dapr, Function };
-}
+﻿namespace BankManagementSystemUI.Services;
+
+public enum ServerType { Dapr, Function };

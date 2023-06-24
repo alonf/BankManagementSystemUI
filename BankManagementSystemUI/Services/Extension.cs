@@ -5,7 +5,8 @@ namespace BankManagementSystemUI.Services;
 
 public static class Extension
 {
-    private static readonly Random Jitterer = new Random();
+    private static readonly Random Jitterer = new();
+    // ReSharper disable once UnusedMember.Global
     public static IHttpClientBuilder AddRobustHttpClient<TClient, TImplementation>(
         this IServiceCollection services, int retryCount = 5,
         int handledEventsAllowedBeforeBreaking = 5, int durationOfBreakInSeconds = 30, string? baseUrl = null)
